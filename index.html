@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Need Some One? | Dating Discovery Demo</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: white;
+      background: #070707;
+      overflow-x: hidden;
+    }
+
+    body.girls-theme {
+      background: radial-gradient(circle at top, #5c0026, #18000a 55%, #050005);
+    }
+
+    body.boys-theme {
+      background: radial-gradient(circle at top, #262626, #080808 60%, #000000);
+    }
+
+    .petals {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+      display: none;
+    }
+
+    body.girls-theme .petals {
+      display: block;
+    }
+
+    .petal {
+      position: absolute;
+      top: -60px;
+      width: 18px;
+      height: 26px;
+      background: linear-gradient(135deg, #ff7aa2, #b0003a);
+      border-radius: 70% 30% 70% 30%;
+      opacity: 0.75;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-60px) rotate(0deg);
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+      }
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 18px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.45);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(14px);
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    .logo span {
+      color: #ff4d79;
+    }
+
+    body.boys-theme .logo span {
+      color: #d4af37;
+    }
+
+    nav button {
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 10px 16px;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-left: 6px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    nav button:hover,
+    nav button.active {
+      background: #ff4d79;
+      border-color: #ff4d79;
+    }
+
+    body.boys-theme nav button:hover,
+    body.boys-theme nav button.active {
+      background: #d4af37;
+      color: #111;
+      border-color: #d4af37;
+    }
+
+    .hero {
+      position: relative;
+      z-index: 2;
+      min-height: 70vh;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+      gap: 35px;
+      padding: 70px 7%;
+    }
+
+    .hero h1 {
+      font-size: 58px;
+      line-height: 1.1;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 span {
+      color: #ff4d79;
+    }
+
+    body.boys-theme .hero h1 span {
+      color: #d4af37;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #d1d5db;
+      max-width: 720px;
+      margin-bottom: 25px;
+    }
+
+    .hero-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero-card h2 {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .hero-card p {
+      font-size: 15px;
+      margin-bottom: 15px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .stat {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 16px;
+      border-radius: 18px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stat strong {
+      font-size: 25px;
+      display: block;
+      color: #facc15;
+    }
+
+    .section {
+      position: relative;
+      z-index: 2;
+      padding: 45px 7%;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .section-title h2 {
+      font-size: 34px;
+    }
+
+    .search-box {
+      min-width: 250px;
+      padding: 13px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      outline: none;
+    }
+
+    .search-box::placeholder {
+      color: #cbd5e1;
+    }
+
+    .profiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+      gap: 24px;
+    }
+
+    .profile-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 25px;
+      overflow: hidden;
+      transition: 0.3s;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.28);
+    }
+
+    .profile-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .profile-card.liked {
+      border-color: #facc15;
+      box-shadow: 0 20px 55px rgba(250, 204, 21, 0.18);
+    }
+
+    .photo {
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 55px;
+      font-weight: bold;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+    }
+
+    .avatar-face {
+      position: relative;
+      z-index: 2;
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.18);
+      border: 4px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    .profile-info {
+      padding: 20px;
+    }
+
+    .profile-info h3 {
+      font-size: 21px;
+      margin-bottom: 6px;
+    }
+
+    .location {
+      color: #cbd5e1;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .bio {
+      color: #e5e7eb;
+      font-size: 14px;
+      min-height: 48px;
+      margin-bottom: 14px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .actions button {
+      flex: 1;
+      border: none;
+      padding: 11px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.25s;
+    }
+
+    .like {
+      background: #ff4d79;
+      color: white;
+    }
+
+    body.boys-theme .like {
+      background: #d4af37;
+      color: #111;
+    }
+
+    .dislike {
+      background: rgba(255, 255, 255, 0.13);
+      color: white;
+    }
+
+    .actions button:hover {
+      transform: scale(1.04);
+    }
+
+    .stars {
+      margin-top: 12px;
+      color: #facc15;
+      font-weight: bold;
+      display: none;
+    }
+
+    .liked .stars {
+      display: block;
+    }
+
+    .safety {
+      max-width: 950px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 32px;
+      border-radius: 26px;
+      color: #d1d5db;
+      line-height: 1.8;
+    }
+
+    .safety h2 {
+      color: #facc15;
+      margin-bottom: 15px;
+    }
+
+    .safety ul {
+      margin-left: 22px;
+      margin-top: 14px;
+    }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 28px;
+      background: rgba(0, 0, 0, 0.45);
+      color: #94a3b8;
+      margin-top: 35px;
+    }
+
+    @media (max-width: 800px) {
+      header {
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      nav button {
+        margin: 4px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 45px;
+      }
+
+      .hero h1 {
+        font-size: 39px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body class="girls-theme">
+
+  <div class="petals" id="petals"></div>
+
+  <header>
+    <div class="logo">Need Some <span>One?</span></div>
+
+    <nav>
+      <button onclick="showSection('girls')" class="active" id="girlsBtn">Girls</button>
+      <button onclick="showSection('boys')" id="boysBtn">Boys</button>
+      <button onclick="scrollToSafety()">Safety</button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Meet people with <span>style, respect, and real choices.</span></h1>
+      <p>
+        Need Some One? is a modern dating discovery demo project.
+        It has separate male and female profile sections, like/dislike actions,
+        search, premium design, and star-based interaction.
+      </p>
+      <p>
+        This demo uses fictional 18+ profiles only. No real private photos or real identities are used.
+      </p>
+    </div>
+
+    <div class="hero-card">
+      <h2>Demo Features</h2>
+      <p>Premium black theme for boys and romantic rose theme for girls.</p>
+
+      <div class="stats">
+        <div class="stat">
+          <strong>200</strong>
+          Girls
+        </div>
+        <div class="stat">
+          <strong>200</strong>
+          Boys
+        </div>
+        <div class="stat">
+          <strong>+3</strong>
+          Stars
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2 id="sectionHeading">Girls Profiles</h2>
+      <input
+        class="search-box"
+        id="searchInput"
+        oninput="renderProfiles()"
+        placeholder="Search name or location..."
+      />
+    </div>
+
+    <div class="profiles" id="profiles"></div>
+  </section>
+
+  <section class="section" id="safety">
+    <div class="safety">
+      <h2>Safety & Privacy</h2>
+      <p>
+        This is a demo dating website project created for learning and portfolio practice.
+      </p>
+
+      <ul>
+        <li>All profiles are fictional and 18+.</li>
+        <li>No real person photo is used without permission.</li>
+        <li>A real dating app must include user verification, report, block, moderation, privacy, and consent features.</li>
+        <li>Users should never share sensitive personal information too early.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    © 2026 Need Some One? | Dating discovery demo website.
+  </footer>
+
+  <script>
+    const girlsNames = [
+      "Aanya", "Kiara", "Riya", "Anika", "Meera", "Sara", "Tara", "Nisha", "Isha", "Avni",
+      "Maya", "Diya", "Alina", "Sana", "Reya", "Zoya", "Trisha", "Lavanya", "Naina", "Kavya"
+    ];
+
+    const boysNames = [
+      "Arjun", "Kabir", "Rohan", "Aarav", "Vivaan", "Aditya", "Karan", "Dev", "Ishaan", "Neil",
+      "Yash", "Aryan", "Veer", "Rudra", "Aman", "Reyansh", "Samay", "Nikhil", "Rishi", "Samar"
+    ];
+
+    const cities = [
+      "Ahmedabad", "Mumbai", "Delhi", "Bengaluru", "Pune", "Hyderabad", "Kolkata", "Chennai",
+      "Jaipur", "Surat", "Indore", "Lucknow", "Chandigarh", "Goa", "Gurugram", "Noida",
+      "Kochi", "Bhubaneswar", "Nagpur", "Udaipur"
+    ];
+
+    const interests = [
+      "Music", "Travel", "Foodie", "Fitness", "Movies", "Coffee", "Books", "Art",
+      "Startups", "Dance", "Photography", "Pets", "Gaming", "Nature", "Fashion"
+    ];
+
+    const girlBios = [
+      "Loves calm conversations, coffee places, and meaningful connections.",
+      "Enjoys travel, music, and people who communicate honestly.",
+      "Looking for kind energy, good humour, and respectful conversations.",
+      "Creative soul who likes art, food, and weekend plans.",
+      "Believes good connection starts with simple, honest conversation."
+    ];
+
+    const boyBios = [
+      "Focused, calm, and always ready for good conversations.",
+      "Enjoys fitness, travel, and meeting people with positive energy.",
+      "Likes meaningful talks, coffee, and exploring new places.",
+      "Ambitious, respectful, and looking for genuine connection.",
+      "Simple person who values honesty, humour, and loyalty."
+    ];
+
+    let currentType = "girls";
+    let likedProfiles = JSON.parse(localStorage.getItem("likedProfiles")) || {};
+
+    function createPetals() {
+      const petals = document.getElementById("petals");
+
+      for (let i = 0; i < 35; i++) {
+        const petal = document.createElement("div");
+        petal.className = "petal";
+        petal.style.left = Math.random() * 100 + "vw";
+        petal.style.animationDuration = 5 + Math.random() * 7 + "s";
+        petal.style.animationDelay = Math.random() * 5 + "s";
+        petals.appendChild(petal);
+      }
+    }
+
+    function generateProfiles(type) {
+      const profiles = [];
+      const names = type === "girls" ? girlsNames : boysNames;
+      const bios = type === "girls" ? girlBios : boyBios;
+
+      for (let i = 1; i <= 200; i++) {
+        const firstName = names[(i - 1) % names.length];
+        const letter = String.fromCharCode(65 + (i % 26));
+        const name = firstName + " " + letter + ".";
+        const age = 18 + (i % 15);
+        const city = cities[(i - 1) % cities.length];
+
+        const profileInterests = [
+          interests[i % interests.length],
+          interests[(i + 4) % interests.length],
+          interests[(i + 8) % interests.length]
+        ];
+
+        profiles.push({
+          id: type + "-" + i,
+          name: name,
+          age: age,
+          city: city,
+          bio: bios[i % bios.length],
+          interests: profileInterests,
+          initials: firstName.charAt(0) + letter,
+          colorOne: getColor(type, i, 1),
+          colorTwo: getColor(type, i, 2)
+        });
+      }
+
+      return profiles;
+    }
+
+    function getColor(type, number, shade) {
+      if (type === "girls") {
+        const colors = [
+          "#ff4d79", "#ff7aa2", "#c9184a", "#ff99c8", "#b0003a", "#e91e63"
+        ];
+        return colors[(number + shade) % colors.length];
+      } else {
+        const colors = [
+          "#d4af37", "#1f2937", "#111827", "#6b7280", "#b8860b", "#343434"
+        ];
+        return colors[(number + shade) % colors.length];
+      }
+    }
+
+    function showSection(type) {
+      currentType = type;
+
+      document.body.className = type === "girls" ? "girls-theme" : "boys-theme";
+
+      document.getElementById("girlsBtn").classList.toggle("active", type === "girls");
+      document.getElementById("boysBtn").classList.toggle("active", type === "boys");
+
+      document.getElementById("sectionHeading").innerText =
+        type === "girls" ? "Girls Profiles" : "Boys Profiles";
+
+      document.getElementById("searchInput").value = "";
+      renderProfiles();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderProfiles() {
+      const container = document.getElementById("profiles");
+      const search = document.getElementById("searchInput").value.toLowerCase();
+
+      const profiles = generateProfiles(currentType).filter(profile =>
+        profile.name.toLowerCase().includes(search) ||
+        profile.city.toLowerCase().includes(search)
+      );
+
+      container.innerHTML = "";
+
+      profiles.forEach(profile => {
+        const liked = likedProfiles[profile.id];
+
+        const card = document.createElement("div");
+        card.className = "profile-card" + (liked ? " liked" : "");
+
+        card.innerHTML = `
+          <div class="photo" style="background: linear-gradient(135deg, ${profile.colorOne}, ${profile.colorTwo});">
+            <div class="avatar-face">${profile.initials}</div>
+          </div>
+
+          <div class="profile-info">
+            <h3>${profile.name}, ${profile.age}</h3>
+            <div class="location">📍 ${profile.city}, India</div>
+            <p class="bio">${profile.bio}</p>
+
+            <div class="tags">
+              ${profile.interests.map(tag => `<span class="tag">${tag}</span>`).join("")}
+            </div>
+
+            <div class="actions">
+              <button class="dislike" onclick="dislikeProfile('${profile.id}')">Dislike</button>
+              <button class="like" onclick="likeProfile('${profile.id}')">Like</button>
+            </div>
+
+            <div class="stars">⭐⭐⭐ You liked this profile</div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function likeProfile(id) {
+      likedProfiles[id] = true;
+      localStorage.setItem("likedProfiles", JSON.stringify(likedProfiles));
+      renderProfiles();
+    }
+
+    function dislikeProfile(id) {
+      delete likedProfiles[id];
+      localStorage.setItem("likedProfiles", JSON.stringify(likedProfiles));
+      renderProfiles();
+    }
+
+    function scrollToSafety() {
+      document.getElementById("safety").scrollIntoView({ behavior: "smooth" });
+    }
+
+    createPetals();
+    renderProfiles();
+  </script>
+
+</body>
+</html>
