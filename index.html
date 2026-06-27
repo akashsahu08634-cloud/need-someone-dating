@@ -243,35 +243,25 @@
     }
 
     .photo {
-      height: 250px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 55px;
-      font-weight: bold;
+      height: 260px;
       position: relative;
       overflow: hidden;
+      background: #111;
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: linear-gradient(135deg, #ff4d79, #350014);
     }
 
     .photo::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
-    }
-
-    .avatar-face {
-      position: relative;
-      z-index: 2;
-      width: 118px;
-      height: 118px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.18);
-      border: 4px solid rgba(255, 255, 255, 0.35);
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.45), transparent);
     }
 
     .profile-info {
@@ -436,7 +426,7 @@
       <p>
         Need Some One? is a modern dating discovery demo project.
         It has separate male and female profile sections, like/dislike actions,
-        search, premium design, and star-based interaction.
+        search, premium design, profile photos, and star-based interaction.
       </p>
       <p>
         This demo uses fictional 18+ profiles only. No real private photos or real identities are used.
@@ -488,6 +478,7 @@
       <ul>
         <li>All profiles are fictional and 18+.</li>
         <li>No real person photo is used without permission.</li>
+        <li>The profile images are avatar-style generated images for demo use.</li>
         <li>A real dating app must include user verification, report, block, moderation, privacy, and consent features.</li>
         <li>Users should never share sensitive personal information too early.</li>
       </ul>
@@ -552,6 +543,14 @@
       }
     }
 
+    function getProfilePhoto(type, number) {
+      if (type === "girls") {
+        return "https://api.dicebear.com/9.x/lorelei/svg?seed=girl-" + number + "&backgroundColor=ffd5dc,ffdfbf,fecaca,ffe4e6";
+      } else {
+        return "https://api.dicebear.com/9.x/adventurer/svg?seed=boy-" + number + "&backgroundColor=d4af37,1f2937,111827,e5e7eb";
+      }
+    }
+
     function generateProfiles(type) {
       const profiles = [];
       const names = type === "girls" ? girlsNames : boysNames;
@@ -577,27 +576,11 @@
           city: city,
           bio: bios[i % bios.length],
           interests: profileInterests,
-          initials: firstName.charAt(0) + letter,
-          colorOne: getColor(type, i, 1),
-          colorTwo: getColor(type, i, 2)
+          photo: getProfilePhoto(type, i)
         });
       }
 
       return profiles;
-    }
-
-    function getColor(type, number, shade) {
-      if (type === "girls") {
-        const colors = [
-          "#ff4d79", "#ff7aa2", "#c9184a", "#ff99c8", "#b0003a", "#e91e63"
-        ];
-        return colors[(number + shade) % colors.length];
-      } else {
-        const colors = [
-          "#d4af37", "#1f2937", "#111827", "#6b7280", "#b8860b", "#343434"
-        ];
-        return colors[(number + shade) % colors.length];
-      }
     }
 
     function showSection(type) {
@@ -634,8 +617,8 @@
         card.className = "profile-card" + (liked ? " liked" : "");
 
         card.innerHTML = `
-          <div class="photo" style="background: linear-gradient(135deg, ${profile.colorOne}, ${profile.colorTwo});">
-            <div class="avatar-face">${profile.initials}</div>
+          <div class="photo">
+            <img src="${profile.photo}" alt="${profile.name} profile photo">
           </div>
 
           <div class="profile-info">
